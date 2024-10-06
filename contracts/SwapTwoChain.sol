@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.18;
+pragma solidity ^0.8.18;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-
+import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 
 contract SwapTwoChain {
     enum Status {
@@ -152,9 +152,8 @@ contract SwapTwoChain {
      * @param signatureAdmin - Signature of admin on txID, address, nonce.
      */
     function refund(bytes32 contractId, uint256 nonce, bytes memory signatureAdmin) orderExisted(contractId) orderInProgress(contractId) external {
-        
         bytes32 message = keccak256(abi.encodePacked(contractId, msg.sender, nonce));
-        bytes32 messageHash = ECDSA.toEthSignedMessageHash(message);
+        bytes32 messageHash = MessageHashUtils.toEthSignedMessageHash(message);
 
         require(admin == ECDSA.recover(messageHash, signatureAdmin), "Invalid signature");
         
